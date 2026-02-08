@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 function App() {
@@ -6,7 +7,6 @@ function App() {
     handleSubmit,
     watch,
     reset,
-    resetField,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -16,6 +16,24 @@ function App() {
 
   const onSubmit = async (data) => {
     console.log("Form Data", data);
+    setServerMessage("");
+
+    try {
+      // fake api delay
+    await new Promise((res) => setTimeout(res, 2000));
+
+    // Random success/fail simulation
+    const success = Math.random() > 0.5;
+
+    if(!success) {
+      throw new Error("Server error. Try Again !");
+    }
+    setServerMessage("Signup Succesful");
+    reset();
+    }
+    catch(error){
+      setServerMessage(error.message);
+    }
 
     // fake api delay
     await new Promise((res) => setTimeout(res, 2000));
@@ -24,9 +42,11 @@ function App() {
 
   const password = watch("password"); // Watch password field
 
+  const [serverMessage,setServerMessage] = useState("");
+
   return (
     <div style={{ padding: 20 }}>
-      <h1>Advanced Form</h1>
+      <h1>Production Form</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* USER NAME */}
@@ -111,14 +131,22 @@ function App() {
         <button
           type="button"
           onClick={() => {
-            resetField("email");
-            resetField("userName");
+            reset("")
           }}
           style={{ marginLeft: 10 }}
         >
           Reset
         </button>
       </form>
+
+      {serverMessage && (
+        <p style={{
+          color : serverMessage.includes("succesful") ? "green" : "red",
+          margin : 10
+        }}>
+          {serverMessage}
+        </p>
+      )}
     </div>
   );
 }
