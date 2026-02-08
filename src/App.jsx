@@ -5,11 +5,20 @@ function App() {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm();
+    reset,
+    resetField,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      name: "Anurag",
+    },
+  });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Form Data", data);
+
+    // fake api delay
+    await new Promise((res) => setTimeout(res, 2000));
     alert("Signup Successful");
   };
 
@@ -17,7 +26,7 @@ function App() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>SignUp Form</h1>
+      <h1>Advanced Form</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* USER NAME */}
@@ -95,7 +104,20 @@ function App() {
           <p style={{ color: "red" }}>{errors.confirmPassword?.message}</p>
         </div>
 
-        <button type="submit">Signup</button>
+        <button disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            resetField("email");
+            resetField("userName");
+          }}
+          style={{ marginLeft: 10 }}
+        >
+          Reset
+        </button>
       </form>
     </div>
   );
